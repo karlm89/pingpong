@@ -39,6 +39,9 @@ class SiteControllerTest extends TestCase
 
         // See sites name on page
         $response->assertSeeText('Google');
+
+        // Make sure we are on the right site URL
+        $this->assertEquals(route('sites.show', $site), url()->current());
     }
 
     public function test_only_auth_users_can_create_sites()
