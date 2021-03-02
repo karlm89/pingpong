@@ -46,8 +46,6 @@ class SiteControllerTest extends TestCase
 
     public function test_only_auth_users_can_create_sites()
     {
-        $this->withoutExceptionHandling();
-
         // Make a post request
         $response = $this
             ->followingRedirects()
@@ -57,10 +55,9 @@ class SiteControllerTest extends TestCase
         ]);
 
         // Make sure no site exsists in the database
-        $site = Site::first();
         $this->assertDatabaseCount('sites', 0);
 
-        $response->assertSeeText('Login');
+        $response->assertSeeText('Log in');
         $this->assertEquals(route('login'), url()->current());
     }
 }
