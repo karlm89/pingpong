@@ -49,7 +49,7 @@ class SiteControllerTest extends TestCase
         // Make a post request
         $response = $this
             ->followingRedirects()
-            ->post(route('sites.store'),[
+            ->post(route('sites.store'), [
                 'name' => 'Google',
                 'url' => 'https://google.com',
         ]);
@@ -59,5 +59,24 @@ class SiteControllerTest extends TestCase
 
         $response->assertSeeText('Log in');
         $this->assertEquals(route('login'), url()->current());
+    }
+
+    public function test_all_required_fields_are_present()
+    {
+        // Create a user
+        $user = User::factory()->create();
+
+        // Make a post request
+        $response = $this
+            ->actingAs($user)
+            ->post(route('sites.store'), [
+                'name' => '',
+                'url' => '',
+        ]);
+
+        // Make sure no site exsists in the database
+        $this->assertDatabaseCount('sites', 0);
+
+        $response->assertSessionHasErrors(['name', 'url']);
     }
 }

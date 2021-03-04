@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSiteRequest;
 use App\Models\Site;
 use Illuminate\Http\Request;
 
@@ -30,15 +31,12 @@ class SitesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreSiteRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSiteRequest $request)
     {
-        $site = auth()->user()->sites()->create([
-            'name' => $request->name,
-            'url' => $request->url
-        ]);
+        $site = auth()->user()->sites()->create($request->validated());
 
         return redirect()->route('sites.show', $site);
     }
