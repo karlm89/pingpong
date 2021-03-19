@@ -6,13 +6,14 @@ use App\Models\Site;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class SiteControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_site_can_be_created()
+    public function test_site_can_be_created_and_sends_notification()
     {
         $this->withoutExceptionHandling();
 
@@ -42,6 +43,9 @@ class SiteControllerTest extends TestCase
 
         // Make sure we are on the right site URL
         $this->assertEquals(route('sites.show', $site), url()->current());
+
+        // Make sure notifications are sent
+        Notification::assertSentTo($user, SiteAdded::class);
     }
 
     public function test_only_auth_users_can_create_sites()
