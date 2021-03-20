@@ -10,15 +10,15 @@ use Illuminate\Notifications\Notification;
 class SiteAdded extends Notification
 {
     use Queueable;
-
+    public $site;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($site)
     {
-        //
+        $this->site = $site;
     }
 
     /**
@@ -41,9 +41,10 @@ class SiteAdded extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('New Site Added to Your Account')
+            ->line("Hello {$notifiable->name},")
+            ->line("We are just informing you that the site, {$this->site->url} was added to your account.")
+            ->action('See Site', route('sites.show', $this->site));
     }
 
     /**

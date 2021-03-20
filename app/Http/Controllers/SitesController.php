@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreSiteRequest;
 use App\Models\Site;
 use Illuminate\Http\Request;
+use App\Notifications\SiteAdded;
+use App\Http\Requests\StoreSiteRequest;
 
 class SitesController extends Controller
 {
@@ -37,6 +38,8 @@ class SitesController extends Controller
     public function store(StoreSiteRequest $request)
     {
         $site = auth()->user()->sites()->create($request->validated());
+
+        $site->user->notify(new SiteAdded($site));
 
         return redirect()->route('sites.show', $site);
     }

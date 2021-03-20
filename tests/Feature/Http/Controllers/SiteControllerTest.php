@@ -15,6 +15,7 @@ class SiteControllerTest extends TestCase
 
     public function test_site_can_be_created_and_sends_notification()
     {
+        Notification::fake();
         $this->withoutExceptionHandling();
 
         // Create a user
@@ -45,11 +46,15 @@ class SiteControllerTest extends TestCase
         $this->assertEquals(route('sites.show', $site), url()->current());
 
         // Make sure notifications are sent
-        Notification::assertSentTo($user, SiteAdded::class);
+        Notification::assertSentTo($user, SiteAdded::class, function($notification) {
+            dd($notification);
+        });
     }
 
     public function test_only_auth_users_can_create_sites()
     {
+        Notification::fake();
+
         // Make a post request
         $response = $this
             ->followingRedirects()
@@ -63,10 +68,14 @@ class SiteControllerTest extends TestCase
 
         $response->assertSeeText('Log in');
         $this->assertEquals(route('login'), url()->current());
+        
+        Notification::assertNothingSent();
     }
 
     public function test_all_required_fields_are_present()
     {
+        Notification::fake();
+
         // Create a user
         $user = User::factory()->create();
 
@@ -82,5 +91,7 @@ class SiteControllerTest extends TestCase
         $this->assertDatabaseCount('sites', 0);
 
         $response->assertSessionHasErrors(['name', 'url']);
+
+        Notification::assertNothingSent();
     }
 }
