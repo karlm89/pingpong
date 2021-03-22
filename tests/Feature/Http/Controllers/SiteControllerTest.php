@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\Site;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Notifications\SiteAdded;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SiteControllerTest extends TestCase
 {
@@ -46,9 +47,7 @@ class SiteControllerTest extends TestCase
         $this->assertEquals(route('sites.show', $site), url()->current());
 
         // Make sure notifications are sent
-        Notification::assertSentTo($user, SiteAdded::class, function($notification) {
-            dd($notification);
-        });
+        Notification::assertSentTo($user, SiteAdded::class);
     }
 
     public function test_only_auth_users_can_create_sites()
