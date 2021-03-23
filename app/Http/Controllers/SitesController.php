@@ -37,6 +37,13 @@ class SitesController extends Controller
      */
     public function store(StoreSiteRequest $request)
     {
+        if($site = auth()->user()->sites()->where('url', $request->url)->first()) {
+            return redirect()->route('sites.show', $site)
+                ->withErrors([
+                  'url' => 'URL already exsists'  
+                ]);
+        };
+
         $site = auth()->user()->sites()->create($request->validated());
 
         $site->user->notify(new SiteAdded($site));

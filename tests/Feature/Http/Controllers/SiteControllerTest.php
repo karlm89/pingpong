@@ -71,6 +71,33 @@ class SiteControllerTest extends TestCase
         Notification::assertNothingSent();
     }
 
+    public function test_it_redirects_a_user_if_they_try_to_add_a_duplicate()
+    {
+        Notification::fake();
+
+        // Create a user
+        $user = User::factory()->create();
+
+        $site = $user->sites()->save(Site::factory()->make());
+
+        // Make a post request
+        $response = $this
+            ->actingAs($user)
+            ->post(route('sites.store'), [
+                'name' => 'Google 2',
+                'url' => $site->url,
+        ]);
+
+        // Make sure no site exsists in the database
+
+        $response->assertRedirect(route('sites.show', $site));
+        $response->assertSessionHasErrors(['url']);
+
+        Notification::assertNothingSent();
+
+        $this->assertDatabaseCount('sites', 1);
+    }
+
     public function test_all_required_fields_are_present()
     {
         Notification::fake();
